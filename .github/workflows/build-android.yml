@@ -1,0 +1,34 @@
+name: Build FNF APK
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Install dependencies
+      run: |
+        sudo apt update
+        sudo apt install -y haxe openjdk-11-jdk git wget unzip
+
+        # Instalar Lime e OpenFL
+        haxelib install lime
+        haxelib install openfl
+        haxelib run lime setup android
+
+    - name: Build APK
+      run: |
+        lime build android -release
+
+    - name: Upload APK
+      uses: actions/upload-artifact@v3
+      with:
+        name: FNF-Mod-APK
+        path: export/android/bin/*.apk
